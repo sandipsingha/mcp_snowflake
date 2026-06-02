@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+
+# Environment files
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+snowflake.log
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+*.md
+!README.md
+
+# Scripts
+*.bat
+*.ps1
+redeploy.*
+manage_deployments.py
+setup_secrets.py
+test_secrets.py
+deployment.py
+
+# Prefect
+prefect.yaml
+
+# Made with Bob

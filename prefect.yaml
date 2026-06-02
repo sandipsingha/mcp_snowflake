@@ -1,62 +1,14 @@
-# Prefect deployment configuration
-name: snowflake-mcp-server
+# Prefect Horizon deployment configuration
+name: mcpsnowflake
 version: 2.0.0
 
-# Build configuration
-build:
-  - prefect.deployments.steps.run_shell_script:
-      id: install-deps
-      script: pip install -r requirements.txt
-      stream_output: true
+# Build configuration - Prefect Horizon will handle this automatically
+build: null
 
-# Push configuration (for code storage)
-push:
-  - prefect_docker.deployments.steps.build_docker_image:
-      id: build-image
-      requires: prefect-docker>=0.3.0
-      image_name: snowflake-mcp-server
-      tag: latest
-      dockerfile: auto
-      platform: linux/amd64
+# Push configuration - Not needed for Horizon
+push: null
 
-# Pull configuration
-pull:
-  - prefect.deployments.steps.set_working_directory:
-      directory: /opt/prefect/snowflake-mcp-server
-
-# Deployments
-deployments:
-  - name: snowflake-mcp-production
-    version: 2.0.0
-    tags:
-      - snowflake
-      - mcp
-      - production
-    description: "Snowflake MCP Server for IBM ICA Context Studio"
-    
-    # Schedule (optional - remove if you want on-demand only)
-    # schedule:
-    #   cron: "0 */6 * * *"  # Run every 6 hours
-    #   timezone: "UTC"
-    
-    # Work pool configuration
-    work_pool:
-      name: default-agent-pool
-      work_queue_name: default
-    
-    # Parameters
-    parameters: {}
-    
-    # Infrastructure overrides
-    infrastructure:
-      type: process
-      env:
-        SNOWFLAKE_ACCOUNT: "{{ prefect.blocks.secret.snowflake-account }}"
-        SNOWFLAKE_USERNAME: "{{ prefect.blocks.secret.snowflake-username }}"
-        SNOWFLAKE_PASSWORD: "{{ prefect.blocks.secret.snowflake-password }}"
-        SNOWFLAKE_WAREHOUSE: "{{ prefect.blocks.secret.snowflake-warehouse }}"
-        SNOWFLAKE_DATABASE: "{{ prefect.blocks.secret.snowflake-database }}"
-        SNOWFLAKE_ROLE: "{{ prefect.blocks.secret.snowflake-role }}"
-        PORT: "3000"
+# Pull configuration - Not needed for Horizon
+pull: null
 
 # Made with Bob
