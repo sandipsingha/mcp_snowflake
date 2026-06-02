@@ -1,0 +1,15 @@
+# Core dependencies - Compatible versions
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.4.2
+python-dotenv==1.0.0
+
+# Prefect - Compatible with FastAPI 0.104.1
+prefect==2.14.21
+griffe==0.38.1
+
+# Snowflake
+snowflake-connector-python==3.12.3
+
+# Additional utilities
+python-multipart==0.0.6
