@@ -1,0 +1,41 @@
+# Optimized Dockerfile for Prefect Horizon
+# Uses lighter base image and optimized build steps
+
+FROM python:3.12-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install only essential system dependencies in one layer
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Copy and install requirements in separate layer for better caching
+COPY requirements.txt .
+
+# Install Python packages with optimizations
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Copy application files
+COPY server.py flows.py ./
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PORT=3000 \
+    PYTHONDONTWRITEBYTECODE=1
+
+# Expose port
+EXPOSE 3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD python -c "import requests; requests.get('http://localhost:3000/health')" || exit 1
+
+# Run the server
+CMD ["python", "server.py"]
+
+# Made with Bob

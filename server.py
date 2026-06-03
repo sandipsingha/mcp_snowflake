@@ -9,12 +9,10 @@ from pydantic import BaseModel
 from typing import Optional, Dict, Any, List
 import snowflake.connector
 from prefect import flow, task
-from prefect.blocks.system import Secret
 import os
 from dotenv import load_dotenv
 import logging
 from contextlib import contextmanager
-import asyncio
 
 # Load environment variables (for local development)
 load_dotenv()
@@ -48,55 +46,21 @@ class QueryRequest(BaseModel):
     offset: int = 0
 
 
-# Snowflake connection configuration
-async def load_secret_async(secret_name: str) -> str:
-    """Load a secret asynchronously"""
-    secret = await Secret.load(secret_name)
-    return secret.get()
-
+# Snowflake connection configuration - HARDCODED
 def get_snowflake_config() -> Dict[str, str]:
-    """Get Snowflake configuration from environment variables or Prefect Secrets"""
+    """Get Snowflake configuration - hardcoded for easy deployment"""
     
-    # Try to load from Prefect Cloud Secrets first (for deployed flows)
-    try:
-        logger.info("🔍 Attempting to load credentials from Prefect Cloud Secrets...")
-        
-        # Run async secret loading in sync context
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        try:
-            config = {
-                'account': loop.run_until_complete(load_secret_async("snowflake-account")),
-                'user': loop.run_until_complete(load_secret_async("snowflake-username")),
-                'password': loop.run_until_complete(load_secret_async("snowflake-password")),
-                'warehouse': loop.run_until_complete(load_secret_async("snowflake-warehouse")),
-                'database': loop.run_until_complete(load_secret_async("snowflake-database")),
-                'role': loop.run_until_complete(load_secret_async("snowflake-role"))
-            }
-            logger.info("✅ Successfully loaded credentials from Prefect Cloud Secrets")
-            return config
-        finally:
-            loop.close()
-            
-    except Exception as e:
-        # Fall back to environment variables (for local development)
-        logger.info(f"⚠️ Could not load from Prefect Secrets ({str(e)}), falling back to environment variables...")
-        config = {
-            'account': os.getenv('SNOWFLAKE_ACCOUNT'),
-            'user': os.getenv('SNOWFLAKE_USERNAME'),
-            'password': os.getenv('SNOWFLAKE_PASSWORD'),
-            'warehouse': os.getenv('SNOWFLAKE_WAREHOUSE'),
-            'database': os.getenv('SNOWFLAKE_DATABASE'),
-            'role': os.getenv('SNOWFLAKE_ROLE')
-        }
-        
-        # Validate that we have credentials
-        if not all(config.values()):
-            missing = [k for k, v in config.items() if not v]
-            raise ValueError(f"❌ Missing Snowflake credentials: {', '.join(missing)}")
-        
-        logger.info("✅ Successfully loaded credentials from environment variables")
-        return config
+    config = {
+        'account': 'SE58322-FRA00296',
+        'user': 'ica_service_user',
+        'password': 'ICA_Service_2026!Secure',
+        'warehouse': 'COMPUTE_WH',
+        'database': 'TELECOM_ANALYTICS',
+        'role': 'ICA_SERVICE_ROLE'
+    }
+    
+    logger.info("✅ Using hardcoded Snowflake credentials")
+    return config
 
 
 @contextmanager
